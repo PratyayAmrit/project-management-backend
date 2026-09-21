@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class TaskController extends Controller
 {
@@ -23,13 +24,27 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        // $request->validate([
+        //     'project_id' => 'required|exists:projects,id',
+        //     'title' => 'required|string|max:255',
+        //     'description' => 'nullable|string',
+        //     'status' => 'in:pending,in_progress,completed',
+        //     'due_date' => 'nullable|date'
+        // ]);
+
+        $validator = Validator::make($request->all(),[
             'project_id' => 'required|exists:projects,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'status' => 'in:pending,in_progress,completed',
             'due_date' => 'nullable|date'
         ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'message' => $validator->errors()
+            ]);
+        }
 
         $task = Task::create($request->all());
 
@@ -63,13 +78,19 @@ class TaskController extends Controller
             ],400);
         }
 
-        $request->validate([
+        $validator = validator::make($request->all(),[
             'project_id' => 'required|exists:projects,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'status' => 'in:pending,in_progress,completed',
             'due_date' => 'nullable|date'
         ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'message' => $validator->errors()
+            ]);
+        }
 
         $task->project_id = $request->project_id;
         $task->title = $request->title;

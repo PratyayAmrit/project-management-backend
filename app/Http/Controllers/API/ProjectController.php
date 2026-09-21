@@ -22,11 +22,23 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
-         $request->validate([
-            'name' => 'required|max:255',
+        //  $request->validate([
+        //     'name' => 'required|max:255',
+        //     'description' => 'nullable|string',
+        //     'due_date' => 'nullable|date'
+        // ]);
+
+        $validator = Validator::make($request->all(),[
+            'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'due_date' => 'nullable|date'
         ]);
+
+        if($validator->fails()){
+            return response()->json([
+                "message" => $validator->errors()
+            ],400);
+        }
 
         $project = Project::Create($request->all());
 
@@ -56,11 +68,23 @@ class ProjectController extends Controller
             return response()->json(['message' => 'Project No Found'], 404);
         }
 
-        $request->validate([
+        // $request->validate([
+        //     'name' => 'required|max:255',
+        //     'description' => 'nullable|string',
+        //     'due_date' => 'nullable|date'
+        // ]);
+
+        $validator = Validator::make($request->all(),[
             'name' => 'required|max:255',
             'description' => 'nullable|string',
             'due_date' => 'nullable|date'
         ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'message' => $validator->errors()
+            ]);
+        }
 
         $project->name = $request->name;
         $project->description = $request->description;
